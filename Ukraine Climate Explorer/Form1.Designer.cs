@@ -51,9 +51,13 @@
             // 
             // rtbResult
             // 
+            rtbResult.Cursor = Cursors.IBeam;
+            rtbResult.Font = new Font("Times New Roman", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 204);
             rtbResult.Location = new Point(12, 12);
             rtbResult.Name = "rtbResult";
-            rtbResult.Size = new Size(280, 426);
+            rtbResult.ReadOnly = true;
+            rtbResult.ScrollBars = RichTextBoxScrollBars.ForcedVertical;
+            rtbResult.Size = new Size(390, 426);
             rtbResult.TabIndex = 1;
             rtbResult.Text = "";
             // 
@@ -93,7 +97,7 @@
             grpDataInputs.Controls.Add(btnLoadData);
             grpDataInputs.Controls.Add(label1);
             grpDataInputs.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            grpDataInputs.Location = new Point(298, 12);
+            grpDataInputs.Location = new Point(408, 12);
             grpDataInputs.Name = "grpDataInputs";
             grpDataInputs.Size = new Size(436, 132);
             grpDataInputs.TabIndex = 6;
@@ -112,7 +116,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(769, 450);
+            ClientSize = new Size(854, 451);
             Controls.Add(grpDataInputs);
             Controls.Add(rtbResult);
             Name = "Form1";

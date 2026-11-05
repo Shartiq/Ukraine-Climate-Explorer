@@ -35,18 +35,34 @@ namespace Ukraine_Climate_Explorer
 
                 rtbResult.Clear();
 
-                rtbResult.AppendText($"Average Temperature: {stats.AverageTemperature:F2} °C {Environment.NewLine}");
-                rtbResult.AppendText($"Minimum Temperature: {stats.MinimumTemperature:F2} °C {Environment.NewLine}");
-                rtbResult.AppendText($"Maximum Temperature: {stats.MaximumTemperature:F2} °C {Environment.NewLine}");
-                rtbResult.AppendText($"Below Freezing Days: {stats.BelowFreezingDays} {Environment.NewLine}");
+                rtbResult.AppendText(
+                    $"Average Temperature: {stats.AverageTemperature:F2} °C " +
+                    $"{Environment.NewLine}");
+
+                rtbResult.AppendText(
+                    $"Minimum Temperature: {stats.MinimumTemperature:F2} °C " +
+                    $"({FormatDate(stats.MinimumTemperatureDate)})" +
+                    $"{Environment.NewLine}");
+
+                rtbResult.AppendText(
+                    $"Maximum Temperature: {stats.MaximumTemperature:F2} °C " +
+                    $"({FormatDate(stats.MaximumTemperatureDate)})" +
+                    $"{Environment.NewLine}");
+
+                rtbResult.AppendText(
+                    $"Below Freezing Days: {stats.BelowFreezingDays} " +
+                    $"{Environment.NewLine}");
 
                 rtbResult.AppendText(
                     $"Temperatures in Kyiv from {startDate:dd-MM-yyyy} " +
-                    $"to {endDate:dd-MM-yyyy} (°C):{Environment.NewLine}");
+                    $"to {endDate:dd-MM-yyyy} (°C):" +
+                    $"{Environment.NewLine}");
 
                 foreach (var item in temperatures.Where(t => t.Value != -999))
                 {
-                    rtbResult.AppendText($"{FormatDate(item.Key)}: {item.Value} °C{Environment.NewLine}");
+                    rtbResult.AppendText(
+                        $"{FormatDate(item.Key)}: {item.Value} " +
+                        $"°C{Environment.NewLine}");
                 }
             }
             catch (Exception ex)
