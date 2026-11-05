@@ -30,13 +30,20 @@
         {
             btnLoadData = new Button();
             rtbResult = new RichTextBox();
+            dtpStartDate = new DateTimePicker();
+            label1 = new Label();
+            label2 = new Label();
+            grpDataInputs = new GroupBox();
+            dtpEndDate = new DateTimePicker();
+            grpDataInputs.SuspendLayout();
             SuspendLayout();
             // 
             // btnLoadData
             // 
-            btnLoadData.Location = new Point(298, 12);
+            btnLoadData.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            btnLoadData.Location = new Point(6, 73);
             btnLoadData.Name = "btnLoadData";
-            btnLoadData.Size = new Size(75, 128);
+            btnLoadData.Size = new Size(424, 53);
             btnLoadData.TabIndex = 0;
             btnLoadData.Text = "Load Data";
             btnLoadData.UseVisualStyleBackColor = true;
@@ -50,15 +57,68 @@
             rtbResult.TabIndex = 1;
             rtbResult.Text = "";
             // 
+            // dtpStartDate
+            // 
+            dtpStartDate.Location = new Point(6, 44);
+            dtpStartDate.Name = "dtpStartDate";
+            dtpStartDate.Size = new Size(209, 21);
+            dtpStartDate.TabIndex = 2;
+            dtpStartDate.Value = new DateTime(2025, 1, 1, 0, 0, 0, 0);
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            label1.Location = new Point(6, 26);
+            label1.Name = "label1";
+            label1.Size = new Size(82, 15);
+            label1.TabIndex = 4;
+            label1.Text = "Start period";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            label2.Location = new Point(221, 26);
+            label2.Name = "label2";
+            label2.Size = new Size(78, 15);
+            label2.TabIndex = 5;
+            label2.Text = "End Period";
+            // 
+            // grpDataInputs
+            // 
+            grpDataInputs.Controls.Add(dtpEndDate);
+            grpDataInputs.Controls.Add(dtpStartDate);
+            grpDataInputs.Controls.Add(label2);
+            grpDataInputs.Controls.Add(btnLoadData);
+            grpDataInputs.Controls.Add(label1);
+            grpDataInputs.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            grpDataInputs.Location = new Point(298, 12);
+            grpDataInputs.Name = "grpDataInputs";
+            grpDataInputs.Size = new Size(436, 132);
+            grpDataInputs.TabIndex = 6;
+            grpDataInputs.TabStop = false;
+            grpDataInputs.Text = "Data Inputs";
+            // 
+            // dtpEndDate
+            // 
+            dtpEndDate.Location = new Point(221, 44);
+            dtpEndDate.Name = "dtpEndDate";
+            dtpEndDate.Size = new Size(209, 21);
+            dtpEndDate.TabIndex = 6;
+            dtpEndDate.Value = new DateTime(2025, 1, 31, 0, 0, 0, 0);
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(389, 450);
+            ClientSize = new Size(769, 450);
+            Controls.Add(grpDataInputs);
             Controls.Add(rtbResult);
-            Controls.Add(btnLoadData);
             Name = "Form1";
             Text = "Form1";
+            grpDataInputs.ResumeLayout(false);
+            grpDataInputs.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -66,5 +126,10 @@
 
         private Button btnLoadData;
         private RichTextBox rtbResult;
+        private DateTimePicker dtpStartDate;
+        private Label label1;
+        private Label label2;
+        private GroupBox grpDataInputs;
+        private DateTimePicker dtpEndDate;
     }
 }

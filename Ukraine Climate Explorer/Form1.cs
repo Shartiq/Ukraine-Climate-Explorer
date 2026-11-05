@@ -1,10 +1,7 @@
-using Microsoft.VisualBasic.Logging;
 using System.Globalization;
-using System.Text.Json;
 using Ukraine_Climate_Explorer.Analysis;
 using Ukraine_Climate_Explorer.Models;
 using Ukraine_Climate_Explorer.Services;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Ukraine_Climate_Explorer
 {
@@ -19,9 +16,20 @@ namespace Ukraine_Climate_Explorer
 
         private async void btnLoadData_Click(object sender, EventArgs e)
         {
+            DateTime startDate = dtpStartDate.Value.Date;
+            DateTime endDate = dtpEndDate.Value.Date;
+
+            if (startDate > endDate)
+            {
+                MessageBox.Show("Start date cannot be later than end date.");
+                return;
+            }
+
+            btnLoadData.Enabled = false;
+
             try
             {
-                var temperatures = await nasaService.GetTemperaturesAsync();
+                var temperatures = await nasaService.GetTemperaturesAsync(startDate, endDate);
 
                 ClimateStatistics stats = ClimateAnalyzer.Analyze(temperatures);
 
@@ -32,20 +40,26 @@ namespace Ukraine_Climate_Explorer
                 rtbResult.AppendText($"Maximum Temperature: {stats.MaximumTemperature:F2} °C {Environment.NewLine}");
                 rtbResult.AppendText($"Below Freezing Days: {stats.BelowFreezingDays} {Environment.NewLine}");
 
-                rtbResult.AppendText($"All temperatures in Kyiv through January 2025 (°C): {Environment.NewLine}");
+                rtbResult.AppendText(
+                    $"Temperatures in Kyiv from {startDate:dd-MM-yyyy} " +
+                    $"to {endDate:dd-MM-yyyy} (°C):{Environment.NewLine}");
 
                 foreach (var item in temperatures.Where(t => t.Value != -999))
                 {
-                    rtbResult.AppendText($"{FormateDate(item.Key)}: {item.Value} °C{Environment.NewLine}");
+                    rtbResult.AppendText($"{FormatDate(item.Key)}: {item.Value} °C{Environment.NewLine}");
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("btnLoadData_Click: " + ex.Message);
             }
+            finally
+            {
+                btnLoadData.Enabled = true;
+            }
         }
 
-        private string FormateDate(string date)
+        private static string FormatDate(string date)
         {
             DateTime parsedDate = DateTime.ParseExact(
                 date, "yyyyMMdd", CultureInfo.InvariantCulture
