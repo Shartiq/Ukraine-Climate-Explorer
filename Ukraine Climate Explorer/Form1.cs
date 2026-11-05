@@ -1,6 +1,7 @@
 using Microsoft.VisualBasic.Logging;
 using System.Globalization;
 using System.Text.Json;
+using Ukraine_Climate_Explorer.Analysis;
 using Ukraine_Climate_Explorer.Models;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -40,24 +41,14 @@ namespace Ukraine_Climate_Explorer
 
                     var temperatures = nasaData.Properties.Parameter.T2M;
 
-                    var validTemperatures = temperatures.Values.Where(v => v != -999).ToList();
-
-                    if (validTemperatures.Count == 0)
-                    {
-                        throw new Exception("No valid temperature data found.");
-                    }
-
-                    double average = validTemperatures.Average();
-                    double minimum = validTemperatures.Min();
-                    double maximum = validTemperatures.Max();
-                    int belowFreezingCount = validTemperatures.Count(v => v < 0);
+                    ClimateStatistics stats = ClimateAnalyzer.Analyze(temperatures);
 
                     rtbResult.Clear();
 
-                    rtbResult.AppendText($"Average Temperature: {average:F2} °C {Environment.NewLine}");
-                    rtbResult.AppendText($"Minimum Temperature: {minimum:F2} °C {Environment.NewLine}");
-                    rtbResult.AppendText($"Maximum Temperature: {maximum:F2} °C {Environment.NewLine}");
-                    rtbResult.AppendText($"Below Freezing Days: {belowFreezingCount} {Environment.NewLine}");
+                    rtbResult.AppendText($"Average Temperature: {stats.AverageTemperature:F2} °C {Environment.NewLine}");
+                    rtbResult.AppendText($"Minimum Temperature: {stats.MinimumTemperature:F2} °C {Environment.NewLine}");
+                    rtbResult.AppendText($"Maximum Temperature: {stats.MaximumTemperature:F2} °C {Environment.NewLine}");
+                    rtbResult.AppendText($"Below Freezing Days: {stats.BelowFreezingDays} {Environment.NewLine}");
 
                     rtbResult.AppendText($"All temperatures in Kyiv through January 2025 (°C): {Environment.NewLine}");
 
