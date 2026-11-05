@@ -28,12 +28,43 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            btnLoadData = new Button();
+            rtbResult = new RichTextBox();
+            SuspendLayout();
+            // 
+            // btnLoadData
+            // 
+            btnLoadData.Location = new Point(298, 12);
+            btnLoadData.Name = "btnLoadData";
+            btnLoadData.Size = new Size(75, 128);
+            btnLoadData.TabIndex = 0;
+            btnLoadData.Text = "Load Data";
+            btnLoadData.UseVisualStyleBackColor = true;
+            btnLoadData.Click += btnLoadData_Click;
+            // 
+            // rtbResult
+            // 
+            rtbResult.Location = new Point(12, 12);
+            rtbResult.Name = "rtbResult";
+            rtbResult.Size = new Size(280, 426);
+            rtbResult.TabIndex = 1;
+            rtbResult.Text = "";
+            // 
+            // Form1
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(389, 450);
+            Controls.Add(rtbResult);
+            Controls.Add(btnLoadData);
+            Name = "Form1";
             Text = "Form1";
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private Button btnLoadData;
+        private RichTextBox rtbResult;
     }
 }
