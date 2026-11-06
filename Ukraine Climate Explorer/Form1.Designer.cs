@@ -34,6 +34,8 @@
             label1 = new Label();
             label2 = new Label();
             grpDataInputs = new GroupBox();
+            label3 = new Label();
+            cmbCity = new ComboBox();
             dtpEndDate = new DateTimePicker();
             grpDataInputs.SuspendLayout();
             SuspendLayout();
@@ -41,7 +43,7 @@
             // btnLoadData
             // 
             btnLoadData.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            btnLoadData.Location = new Point(6, 73);
+            btnLoadData.Location = new Point(6, 136);
             btnLoadData.Name = "btnLoadData";
             btnLoadData.Size = new Size(424, 53);
             btnLoadData.TabIndex = 0;
@@ -63,7 +65,7 @@
             // 
             // dtpStartDate
             // 
-            dtpStartDate.Location = new Point(6, 44);
+            dtpStartDate.Location = new Point(6, 107);
             dtpStartDate.Name = "dtpStartDate";
             dtpStartDate.Size = new Size(209, 21);
             dtpStartDate.TabIndex = 2;
@@ -73,7 +75,7 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            label1.Location = new Point(6, 26);
+            label1.Location = new Point(6, 89);
             label1.Name = "label1";
             label1.Size = new Size(82, 15);
             label1.TabIndex = 4;
@@ -83,7 +85,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            label2.Location = new Point(221, 26);
+            label2.Location = new Point(221, 89);
             label2.Name = "label2";
             label2.Size = new Size(78, 15);
             label2.TabIndex = 5;
@@ -91,6 +93,8 @@
             // 
             // grpDataInputs
             // 
+            grpDataInputs.Controls.Add(label3);
+            grpDataInputs.Controls.Add(cmbCity);
             grpDataInputs.Controls.Add(dtpEndDate);
             grpDataInputs.Controls.Add(dtpStartDate);
             grpDataInputs.Controls.Add(label2);
@@ -99,14 +103,34 @@
             grpDataInputs.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
             grpDataInputs.Location = new Point(408, 12);
             grpDataInputs.Name = "grpDataInputs";
-            grpDataInputs.Size = new Size(436, 132);
+            grpDataInputs.Size = new Size(436, 198);
             grpDataInputs.TabIndex = 6;
             grpDataInputs.TabStop = false;
             grpDataInputs.Text = "Data Inputs";
             // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            label3.Location = new Point(6, 17);
+            label3.Name = "label3";
+            label3.Size = new Size(30, 15);
+            label3.TabIndex = 8;
+            label3.Text = "City";
+            // 
+            // cmbCity
+            // 
+            cmbCity.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbCity.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            cmbCity.FormattingEnabled = true;
+            cmbCity.Location = new Point(6, 35);
+            cmbCity.Name = "cmbCity";
+            cmbCity.Size = new Size(209, 24);
+            cmbCity.TabIndex = 7;
+            // 
             // dtpEndDate
             // 
-            dtpEndDate.Location = new Point(221, 44);
+            dtpEndDate.Location = new Point(221, 107);
             dtpEndDate.Name = "dtpEndDate";
             dtpEndDate.Size = new Size(209, 21);
             dtpEndDate.TabIndex = 6;
@@ -135,5 +159,7 @@
         private Label label2;
         private GroupBox grpDataInputs;
         private DateTimePicker dtpEndDate;
+        private ComboBox cmbCity;
+        private Label label3;
     }
 }

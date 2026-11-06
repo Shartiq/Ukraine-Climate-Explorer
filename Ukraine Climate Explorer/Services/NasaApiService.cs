@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using Ukraine_Climate_Explorer.Models;
@@ -15,18 +16,20 @@ namespace Ukraine_Climate_Explorer.Services
         };
 
         public async Task<Dictionary<string, double>> GetTemperaturesAsync(
-            DateTime startDate, DateTime endDate)
+            City city, DateTime startDate, DateTime endDate)
         {
+            string latitude = city.Latitude.ToString(CultureInfo.InvariantCulture);
+            string longitude = city.Longitude.ToString(CultureInfo.InvariantCulture);
 
-            string start = startDate.ToString("yyyyMMdd");
-            string end = endDate.ToString("yyyyMMdd");
+            string start = startDate.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
+            string end = endDate.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
 
             string url =
                 $"https://power.larc.nasa.gov/api/temporal/daily/point" +
                 $"?parameters=T2M" +
                 $"&community=RE" +
-                $"&longitude=30.5234" +
-                $"&latitude=50.4501" +
+                $"&longitude={longitude}" +
+                $"&latitude={latitude}" +
                 $"&start={start}" +
                 $"&end={end}" +
                 $"&format=JSON";
