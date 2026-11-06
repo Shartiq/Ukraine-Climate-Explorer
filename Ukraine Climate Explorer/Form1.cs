@@ -2,17 +2,22 @@ using System.Globalization;
 using Ukraine_Climate_Explorer.Analysis;
 using Ukraine_Climate_Explorer.Models;
 using Ukraine_Climate_Explorer.Services;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.WinForms;
+using LiveChartsCore.Defaults;
 
 namespace Ukraine_Climate_Explorer
 {
     public partial class Form1 : Form
     {
         private readonly NasaApiService nasaService = new();
+        private readonly CartesianChart chartTemperature = new();
 
         public Form1()
         {
             InitializeComponent();
             InitializeCities();
+            InitializeChart();
         }
 
         private async void btnLoadData_Click(object sender, EventArgs e)
@@ -42,6 +47,7 @@ namespace Ukraine_Climate_Explorer
                 ClimateStatistics stats = ClimateAnalyzer.Analyze(temperatures);
 
                 DisplayResults(temperatures, stats, city.Name, startDate, endDate);
+                DisplayChart(temperatures);
             }
             catch (Exception ex)
             {
@@ -52,6 +58,22 @@ namespace Ukraine_Climate_Explorer
                 btnLoadData.Enabled = true;
                 btnLoadData.Text = "Load Data";
             }
+        }
+
+        private void DisplayChart(Dictionary<string, double> temperatures)
+        {
+            List<DateTimePoint> points = CreateTemperaturePoints(temperatures);
+
+            chartTemperature.Series =
+            [
+                new LineSeries<DateTimePoint>
+                {
+                    Name = "Temperature",
+                    Values = points,
+                    Fill = null,
+                    LineSmoothness = 0
+                }
+            ];
         }
 
         private void DisplayResults(
@@ -108,9 +130,37 @@ namespace Ukraine_Climate_Explorer
                     Latitude = 49.8397,
                     Longitude = 24.0297
                 },
+                new() {
+                    Name = "Odesa",
+                    Latitude = 46.4825,
+                    Longitude = 30.7233
+                },
+                new() {
+                    Name = "Kharkiv",
+                    Latitude = 49.9935,
+                    Longitude = 36.2304
+                },
+                new() {
+                    Name = "Dnipro",
+                    Latitude = 48.4647,
+                    Longitude = 35.0462
+                }
             };
             cmbCity.DisplayMember = nameof(City.Name);
             cmbCity.DataSource = cities;
+        }
+
+        private void InitializeChart()
+        {
+            chartTemperature.Dock = DockStyle.Fill;
+            pnlChart.Controls.Add(chartTemperature);
+
+            chartTemperature.XAxes =
+            [
+                new DateTimeAxis(
+                    TimeSpan.FromDays(1),
+                    date => date.ToString("dd.MM.yyyy"))
+            ];
         }
 
         private static string FormatDate(string date)
@@ -120,6 +170,20 @@ namespace Ukraine_Climate_Explorer
             );
 
             return parsedDate.ToString("dd-MM-yyyy");
+        }
+
+        private static List<DateTimePoint> CreateTemperaturePoints(Dictionary<string, double> temperatures)
+        {
+            List<DateTimePoint> points = [];
+
+            foreach (var item in temperatures.Where(t => t.Value != -999).OrderBy(t => t.Key))
+            {
+                DateTime parsedDate = DateTime.ParseExact(
+                    item.Key, "yyyyMMdd", CultureInfo.InvariantCulture
+                );
+                points.Add(new DateTimePoint(parsedDate, item.Value));
+            }
+            return points;
         }
     }
 }
