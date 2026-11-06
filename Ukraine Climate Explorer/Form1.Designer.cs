@@ -40,6 +40,8 @@
             dtpEndDate = new DateTimePicker();
             pnlChart = new Panel();
             grpDayChart = new GroupBox();
+            label4 = new Label();
+            cmbChartMode = new ComboBox();
             btnResetZoom = new Button();
             grpDataInputs.SuspendLayout();
             grpDayChart.SuspendLayout();
@@ -109,7 +111,7 @@
             grpDataInputs.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
             grpDataInputs.Location = new Point(408, 12);
             grpDataInputs.Name = "grpDataInputs";
-            grpDataInputs.Size = new Size(752, 155);
+            grpDataInputs.Size = new Size(782, 155);
             grpDataInputs.TabIndex = 6;
             grpDataInputs.TabStop = false;
             grpDataInputs.Text = "Data Inputs";
@@ -119,7 +121,7 @@
             btnResetAll.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
             btnResetAll.Location = new Point(650, 17);
             btnResetAll.Name = "btnResetAll";
-            btnResetAll.Size = new Size(96, 116);
+            btnResetAll.Size = new Size(121, 116);
             btnResetAll.TabIndex = 9;
             btnResetAll.Text = "Reset All";
             btnResetAll.UseVisualStyleBackColor = true;
@@ -162,22 +164,44 @@
             // 
             // grpDayChart
             // 
+            grpDayChart.Controls.Add(label4);
+            grpDayChart.Controls.Add(cmbChartMode);
             grpDayChart.Controls.Add(btnResetZoom);
             grpDayChart.Controls.Add(pnlChart);
             grpDayChart.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
             grpDayChart.Location = new Point(408, 173);
             grpDayChart.Name = "grpDayChart";
-            grpDayChart.Size = new Size(752, 343);
+            grpDayChart.Size = new Size(783, 343);
             grpDayChart.TabIndex = 8;
             grpDayChart.TabStop = false;
             grpDayChart.Text = "Day Chart";
             // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            label4.Location = new Point(650, 22);
+            label4.Name = "label4";
+            label4.Size = new Size(81, 15);
+            label4.TabIndex = 10;
+            label4.Text = "Chart Mode";
+            // 
+            // cmbChartMode
+            // 
+            cmbChartMode.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbChartMode.FormattingEnabled = true;
+            cmbChartMode.Location = new Point(650, 40);
+            cmbChartMode.Name = "cmbChartMode";
+            cmbChartMode.Size = new Size(121, 23);
+            cmbChartMode.TabIndex = 9;
+            cmbChartMode.SelectedIndexChanged += cmbChartMode_SelectedIndexChanged;
+            // 
             // btnResetZoom
             // 
             btnResetZoom.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            btnResetZoom.Location = new Point(650, 22);
+            btnResetZoom.Location = new Point(650, 147);
             btnResetZoom.Name = "btnResetZoom";
-            btnResetZoom.Size = new Size(96, 315);
+            btnResetZoom.Size = new Size(121, 190);
             btnResetZoom.TabIndex = 8;
             btnResetZoom.Text = "Reset Zoom";
             btnResetZoom.UseVisualStyleBackColor = true;
@@ -187,7 +211,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1172, 527);
+            ClientSize = new Size(1202, 527);
             Controls.Add(grpDayChart);
             Controls.Add(grpDataInputs);
             Controls.Add(rtbResult);
@@ -196,6 +220,7 @@
             grpDataInputs.ResumeLayout(false);
             grpDataInputs.PerformLayout();
             grpDayChart.ResumeLayout(false);
+            grpDayChart.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -214,5 +239,7 @@
         private GroupBox grpDayChart;
         private Button btnResetZoom;
         private Button btnResetAll;
+        private Label label4;
+        private ComboBox cmbChartMode;
     }
 }

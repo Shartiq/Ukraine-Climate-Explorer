@@ -13,6 +13,7 @@ namespace Ukraine_Climate_Explorer
     {
         private readonly NasaApiService nasaService = new();
         private readonly CartesianChart chartTemperature = new();
+        private Dictionary<string, double>? loadedTemperatures;
 
         public Form1()
         {
@@ -49,6 +50,8 @@ namespace Ukraine_Climate_Explorer
 
                 ClimateStatistics stats = ClimateAnalyzer.Analyze(temperatures);
 
+                loadedTemperatures = temperatures;
+
                 DisplayResults(temperatures, stats, city.Name, startDate, endDate);
                 DisplayChart(temperatures);
                 ResetChartZoom();
@@ -68,12 +71,15 @@ namespace Ukraine_Climate_Explorer
 
         private void DisplayChart(Dictionary<string, double> temperatures)
         {
-            List<DateTimePoint> points = CreateTemperaturePoints(temperatures);
+            List<DateTimePoint> points = cmbChartMode.SelectedIndex == 1
+                ? CreateMonthlyTemperaturePoints(temperatures)
+                : CreateTemperaturePoints(temperatures);
 
             chartTemperature.Series =
             [
                 new LineSeries<DateTimePoint>
                 {
+                    YToolTipLabelFormatter = point => $"{point.Coordinate.PrimaryValue:F2} °C",
                     GeometrySize = points.Count <= 60 ? 6 : 1,
                     Name = "Temperature",
                     LineSmoothness = 0,
@@ -163,6 +169,9 @@ namespace Ukraine_Climate_Explorer
             pnlChart.Controls.Add(chartTemperature);
             chartTemperature.ZoomMode = ZoomAndPanMode.X;
 
+            cmbChartMode.Items.AddRange(["Daily", "Monthly"]);
+            cmbChartMode.SelectedIndex = 0;
+
             chartTemperature.XAxes =
             [
                 new DateTimeAxis(TimeSpan.FromDays(1),
@@ -186,6 +195,7 @@ namespace Ukraine_Climate_Explorer
             dtpStartDate.Value = DateTime.Today.AddDays(-30);
             dtpEndDate.Value = DateTime.Today;
             cmbCity.SelectedIndex = 0;
+            cmbChartMode.SelectedIndex = 0;
         }
 
         private static string FormatDate(string date)
@@ -211,6 +221,22 @@ namespace Ukraine_Climate_Explorer
             return points;
         }
 
+        private static List<DateTimePoint> CreateMonthlyTemperaturePoints(
+            Dictionary<string, double> temperatures)
+        {
+            List<DateTimePoint> points = [];
+
+            Dictionary<DateTime, double> monthlyAverage =
+                ClimateAnalyzer.CalculateMonthlyAverages(temperatures);
+
+            foreach (var item in monthlyAverage.OrderBy(t => t.Key))
+            {
+                points.Add(new DateTimePoint(item.Key, item.Value));
+            }
+
+            return points;
+        }
+
         private void ResetChartZoom()
         {
             foreach (var axis in chartTemperature.XAxes)
@@ -226,6 +252,7 @@ namespace Ukraine_Climate_Explorer
             rtbResult.Clear();
             chartTemperature.Series = [];
             ResetChartZoom();
+            loadedTemperatures = null;
         }
 
         private void btnResetZoom_Click(object sender, EventArgs e)
@@ -236,6 +263,15 @@ namespace Ukraine_Climate_Explorer
         private void btnResetAll_Click(object sender, EventArgs e)
         {
             ResetInputFields();
+        }
+
+        private void cmbChartMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (loadedTemperatures is null)
+                return;
+
+            DisplayChart(loadedTemperatures);
+            ResetChartZoom();
         }
     }
 }
