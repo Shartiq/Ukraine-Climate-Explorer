@@ -5,6 +5,7 @@ using Ukraine_Climate_Explorer.Services;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.WinForms;
 using LiveChartsCore.Defaults;
+using LiveChartsCore.Measure;
 
 namespace Ukraine_Climate_Explorer
 {
@@ -18,6 +19,7 @@ namespace Ukraine_Climate_Explorer
             InitializeComponent();
             InitializeCities();
             InitializeChart();
+            InitializeInputFields();
         }
 
         private async void btnLoadData_Click(object sender, EventArgs e)
@@ -38,6 +40,7 @@ namespace Ukraine_Climate_Explorer
             }
 
             btnLoadData.Enabled = false;
+            btnResetAll.Enabled = false;
             btnLoadData.Text = "Loading...";
 
             try
@@ -48,6 +51,7 @@ namespace Ukraine_Climate_Explorer
 
                 DisplayResults(temperatures, stats, city.Name, startDate, endDate);
                 DisplayChart(temperatures);
+                ResetChartZoom();
             }
             catch (Exception ex)
             {
@@ -56,7 +60,9 @@ namespace Ukraine_Climate_Explorer
             finally
             {
                 btnLoadData.Enabled = true;
+                btnResetAll.Enabled = true;
                 btnLoadData.Text = "Load Data";
+                btnResetAll.Text = "Reset All";
             }
         }
 
@@ -68,10 +74,11 @@ namespace Ukraine_Climate_Explorer
             [
                 new LineSeries<DateTimePoint>
                 {
+                    GeometrySize = points.Count <= 60 ? 6 : 1,
                     Name = "Temperature",
+                    LineSmoothness = 0,
                     Values = points,
-                    Fill = null,
-                    LineSmoothness = 0
+                    Fill = null
                 }
             ];
         }
@@ -80,7 +87,7 @@ namespace Ukraine_Climate_Explorer
             Dictionary<string, double> temperatures,
             ClimateStatistics stats,
             string cityName,
-            DateTime startDate, 
+            DateTime startDate,
             DateTime endDate)
         {
             rtbResult.Clear();
@@ -154,13 +161,31 @@ namespace Ukraine_Climate_Explorer
         {
             chartTemperature.Dock = DockStyle.Fill;
             pnlChart.Controls.Add(chartTemperature);
+            chartTemperature.ZoomMode = ZoomAndPanMode.X;
 
             chartTemperature.XAxes =
             [
-                new DateTimeAxis(
-                    TimeSpan.FromDays(1),
+                new DateTimeAxis(TimeSpan.FromDays(1),
                     date => date.ToString("dd.MM.yyyy"))
+                {
+                    Name = "Date"
+                }
             ];
+
+            chartTemperature.YAxes =
+            [
+                new Axis
+                {
+                    Name = "Temperature, °C"
+                }
+            ];
+        }
+
+        private void InitializeInputFields()
+        {
+            dtpStartDate.Value = DateTime.Today.AddDays(-30);
+            dtpEndDate.Value = DateTime.Today;
+            cmbCity.SelectedIndex = 0;
         }
 
         private static string FormatDate(string date)
@@ -184,6 +209,33 @@ namespace Ukraine_Climate_Explorer
                 points.Add(new DateTimePoint(parsedDate, item.Value));
             }
             return points;
+        }
+
+        private void ResetChartZoom()
+        {
+            foreach (var axis in chartTemperature.XAxes)
+            {
+                axis.MinLimit = null;
+                axis.MaxLimit = null;
+            }
+        }
+
+        private void ResetInputFields()
+        {
+            InitializeInputFields();
+            rtbResult.Clear();
+            chartTemperature.Series = [];
+            ResetChartZoom();
+        }
+
+        private void btnResetZoom_Click(object sender, EventArgs e)
+        {
+            ResetChartZoom();
+        }
+
+        private void btnResetAll_Click(object sender, EventArgs e)
+        {
+            ResetInputFields();
         }
     }
 }

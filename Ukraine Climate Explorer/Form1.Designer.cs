@@ -34,17 +34,21 @@
             label1 = new Label();
             label2 = new Label();
             grpDataInputs = new GroupBox();
+            btnResetAll = new Button();
             label3 = new Label();
             cmbCity = new ComboBox();
             dtpEndDate = new DateTimePicker();
             pnlChart = new Panel();
+            grpDayChart = new GroupBox();
+            btnResetZoom = new Button();
             grpDataInputs.SuspendLayout();
+            grpDayChart.SuspendLayout();
             SuspendLayout();
             // 
             // btnLoadData
             // 
             btnLoadData.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            btnLoadData.Location = new Point(0, 139);
+            btnLoadData.Location = new Point(0, 80);
             btnLoadData.Name = "btnLoadData";
             btnLoadData.Size = new Size(644, 53);
             btnLoadData.TabIndex = 0;
@@ -94,6 +98,7 @@
             // 
             // grpDataInputs
             // 
+            grpDataInputs.Controls.Add(btnResetAll);
             grpDataInputs.Controls.Add(label3);
             grpDataInputs.Controls.Add(cmbCity);
             grpDataInputs.Controls.Add(dtpEndDate);
@@ -104,10 +109,21 @@
             grpDataInputs.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
             grpDataInputs.Location = new Point(408, 12);
             grpDataInputs.Name = "grpDataInputs";
-            grpDataInputs.Size = new Size(650, 198);
+            grpDataInputs.Size = new Size(752, 155);
             grpDataInputs.TabIndex = 6;
             grpDataInputs.TabStop = false;
             grpDataInputs.Text = "Data Inputs";
+            // 
+            // btnResetAll
+            // 
+            btnResetAll.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            btnResetAll.Location = new Point(650, 17);
+            btnResetAll.Name = "btnResetAll";
+            btnResetAll.Size = new Size(96, 116);
+            btnResetAll.TabIndex = 9;
+            btnResetAll.Text = "Reset All";
+            btnResetAll.UseVisualStyleBackColor = true;
+            btnResetAll.Click += btnResetAll_Click;
             // 
             // label3
             // 
@@ -139,23 +155,47 @@
             // 
             // pnlChart
             // 
-            pnlChart.Location = new Point(408, 216);
+            pnlChart.Location = new Point(6, 22);
             pnlChart.Name = "pnlChart";
-            pnlChart.Size = new Size(650, 300);
+            pnlChart.Size = new Size(638, 315);
             pnlChart.TabIndex = 7;
+            // 
+            // grpDayChart
+            // 
+            grpDayChart.Controls.Add(btnResetZoom);
+            grpDayChart.Controls.Add(pnlChart);
+            grpDayChart.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            grpDayChart.Location = new Point(408, 173);
+            grpDayChart.Name = "grpDayChart";
+            grpDayChart.Size = new Size(752, 343);
+            grpDayChart.TabIndex = 8;
+            grpDayChart.TabStop = false;
+            grpDayChart.Text = "Day Chart";
+            // 
+            // btnResetZoom
+            // 
+            btnResetZoom.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            btnResetZoom.Location = new Point(650, 22);
+            btnResetZoom.Name = "btnResetZoom";
+            btnResetZoom.Size = new Size(96, 315);
+            btnResetZoom.TabIndex = 8;
+            btnResetZoom.Text = "Reset Zoom";
+            btnResetZoom.UseVisualStyleBackColor = true;
+            btnResetZoom.Click += btnResetZoom_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1070, 527);
-            Controls.Add(pnlChart);
+            ClientSize = new Size(1172, 527);
+            Controls.Add(grpDayChart);
             Controls.Add(grpDataInputs);
             Controls.Add(rtbResult);
             Name = "Form1";
-            Text = "Form1";
+            Text = "Ukraine Climate Explorer";
             grpDataInputs.ResumeLayout(false);
             grpDataInputs.PerformLayout();
+            grpDayChart.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -171,5 +211,8 @@
         private ComboBox cmbCity;
         private Label label3;
         private Panel pnlChart;
+        private GroupBox grpDayChart;
+        private Button btnResetZoom;
+        private Button btnResetAll;
     }
 }
