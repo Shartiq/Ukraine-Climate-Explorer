@@ -13,6 +13,7 @@ namespace Ukraine_Climate_Explorer
         private (string CityName, Dictionary<string, double?> Temperatures)? loadedPrimary;
         private (string CityName, Dictionary<string, double?> Temperatures)? loadedComparison;
 
+
         public Form1()
         {
             InitializeComponent();

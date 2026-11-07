@@ -10,15 +10,53 @@ namespace Ukraine_Climate_Explorer
 {
     public partial class Form1
     {
+        private enum ChartMode
+        {
+            Daily,
+            Weekly,
+            Monthly,
+            Difference
+        }
+
         private void DisplayChart()
         {
             if (loadedPrimary is not { } primary)
                 return;
 
-            var primarySeries = CreateTemperatureSeries(primary.Temperatures, primary.CityName);
+            if (cmbChartMode.SelectedItem is not ChartMode mode)
+                return;
+
+            if (mode == ChartMode.Difference)
+            {
+                if (loadedComparison is not { } second)
+                {
+                    chartTemperature.Series = [];
+                    return;
+                }
+
+                var differences = ClimateAnalyzer.CalculateTemperatureDifferences(
+                    primary.Temperatures, second.Temperatures);
+
+                string seriesName = $"{second.CityName} − {primary.CityName}";
+                var differenceSeries = CreateTemperatureSeries(differences, seriesName, mode);
+
+                differenceSeries.Stroke = new SolidColorPaint(SKColors.Goldenrod)
+                {
+                    StrokeThickness = 3
+                };
+                differenceSeries.GeometryStroke = new SolidColorPaint(SKColors.Goldenrod)
+                {
+                    StrokeThickness = 2
+                };
+
+                chartTemperature.Series = [differenceSeries];
+                return;
+            }
+
+            var primarySeries = CreateTemperatureSeries(primary.Temperatures, primary.CityName, mode);
 
             chartTemperature.Series = loadedComparison is { } comparison
-                ? [primarySeries, CreateTemperatureSeries(comparison.Temperatures, comparison.CityName)]
+                ? [primarySeries, CreateTemperatureSeries(comparison.Temperatures, comparison.CityName, mode)]
                 : [primarySeries];
         }
 
@@ -35,7 +73,7 @@ namespace Ukraine_Climate_Explorer
             };
             chartTemperature.LegendTextSize = 13;
 
-            cmbChartMode.Items.AddRange(["Daily", "Monthly"]);
+            cmbChartMode.DataSource = Enum.GetValues<ChartMode>();
             cmbChartMode.SelectedIndex = 0;
 
             chartTemperature.XAxes =
@@ -76,35 +114,38 @@ namespace Ukraine_Climate_Explorer
         }
 
         private LineSeries<DateTimePoint?> CreateTemperatureSeries(
-            Dictionary<string, double?> temperatures, string cityName)
+            Dictionary<string, double?> temperatures, 
+            string cityName, ChartMode mode)
         {
-            List<DateTimePoint?> points = cmbChartMode.SelectedIndex == 1
-                ? CreateMonthlyTemperaturePoints(temperatures)
-                : CreateTemperaturePoints(temperatures);
+            var (points, description) = mode switch
+            {
+                ChartMode.Weekly => (CreateAverageTemperaturePoints(
+                    ClimateAnalyzer.CalculateWeeklyAverages(temperatures)), "weekly average"),
+
+                ChartMode.Monthly => (CreateAverageTemperaturePoints(
+                    ClimateAnalyzer.CalculateMonthlyAverages(temperatures)), "monthly average"),
+
+                _ => (CreateTemperaturePoints(temperatures), "daily temperature")
+            };
 
             return new LineSeries<DateTimePoint?>
             {
                 YToolTipLabelFormatter = point => $"{point.Coordinate.PrimaryValue:F2} °C",
                 GeometrySize = points.Count <= 60 ? 6 : 1,
-                Name = cmbChartMode.SelectedIndex == 1
-                    ? $"{cityName} — monthly average"
-                    : $"{cityName} — daily temperature",
+                Name = mode == ChartMode.Difference ? cityName : $"{cityName} — {description}",
                 EnableNullSplitting = true,
-                LineSmoothness = 0,
+                LineSmoothness = 0.5,
                 Values = points,
                 Fill = null
             };
         }
 
-        private static List<DateTimePoint?> CreateMonthlyTemperaturePoints(
-            Dictionary<string, double?> temperatures)
+        private static List<DateTimePoint?> CreateAverageTemperaturePoints(
+            Dictionary<DateTime, double?> averages)
         {
             List<DateTimePoint?> points = [];
 
-            Dictionary<DateTime, double?> monthlyAverage =
-                ClimateAnalyzer.CalculateMonthlyAverages(temperatures);
-
-            foreach (var item in monthlyAverage.OrderBy(t => t.Key))
+            foreach (var item in averages.OrderBy(t => t.Key))
             {
                 points.Add(item.Value is double temperature
                     ? new DateTimePoint(item.Key, temperature)
