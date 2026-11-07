@@ -2,10 +2,7 @@ using System.Globalization;
 using Ukraine_Climate_Explorer.Analysis;
 using Ukraine_Climate_Explorer.Models;
 using Ukraine_Climate_Explorer.Services;
-using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.WinForms;
-using LiveChartsCore.Defaults;
-using LiveChartsCore.Measure;
 
 namespace Ukraine_Climate_Explorer
 {
@@ -52,11 +49,17 @@ namespace Ukraine_Climate_Explorer
                 ClimateStatistics stats = ClimateAnalyzer.Analyze(temperatures);
 
                 (string CityName, Dictionary<string, double?> Temperatures)? comparison = null;
+                ClimateStatistics? comparisonStats = null;
 
                 if (cmbCompareCity.SelectedIndex > 0 && cmbCompareCity.SelectedItem is City compareCity)
                 {
                     var compareTemperatures = await nasaService.GetTemperaturesAsync(
                         compareCity, startDate, endDate);
+
+                    if (compareTemperatures.Values.Any(value => value.HasValue))
+                    {
+                        comparisonStats = ClimateAnalyzer.Analyze(compareTemperatures);
+                    }
 
                     comparison = (compareCity.Name, compareTemperatures);
                 }
@@ -64,7 +67,8 @@ namespace Ukraine_Climate_Explorer
                 loadedPrimary = (city.Name, temperatures);
                 loadedComparison = comparison;
 
-                DisplayResults(temperatures, stats, city.Name, startDate, endDate);
+                DisplayResults(stats, city.Name, startDate, endDate, 
+                    comparison?.CityName, comparisonStats);
                 DisplayChart();
                 ResetChartZoom();
             }
@@ -81,24 +85,34 @@ namespace Ukraine_Climate_Explorer
             }
         }
 
-        private void DisplayChart()
-        {
-            if (loadedPrimary is not { } primary)
-                return;
-
-            var primarySeries = CreateTemperatureSeries(primary.Temperatures, primary.CityName);
-
-            chartTemperature.Series = loadedComparison is { } comparison
-                ? [primarySeries, CreateTemperatureSeries(comparison.Temperatures, comparison.CityName)]
-                : [primarySeries];
-        }
-
         private void DisplayResults(
-            Dictionary<string, double?> temperatures,
             ClimateStatistics stats, string cityName,
-            DateTime startDate, DateTime endDate)
+            DateTime startDate, DateTime endDate,
+            string? comparisonCityName, 
+            ClimateStatistics? comparisonStats)
         {
             rtbResult.Clear();
+
+            rtbResult.AppendText(
+                $"Period: {startDate:dd-MM-yyyy} – {endDate:dd-MM-yyyy}" +
+                $"{Environment.NewLine}{Environment.NewLine}");
+
+            AppendStatistics(cityName, stats);
+
+            if (comparisonCityName is not null)
+            {
+                rtbResult.AppendText(Environment.NewLine);
+
+                if (comparisonStats is not null)
+                    AppendStatistics(comparisonCityName, comparisonStats);
+                else
+                    rtbResult.AppendText($"{comparisonCityName}: No data{Environment.NewLine}");
+            }
+        }
+
+        private void AppendStatistics(string cityName, ClimateStatistics stats)
+        {
+            rtbResult.AppendText($"{cityName}{Environment.NewLine}");
 
             rtbResult.AppendText(
                     $"Average Temperature: {stats.AverageTemperature:F2} °C " +
@@ -117,21 +131,6 @@ namespace Ukraine_Climate_Explorer
             rtbResult.AppendText(
                 $"Below Freezing Days: {stats.BelowFreezingDays} " +
                 $"{Environment.NewLine}");
-
-            rtbResult.AppendText(
-                $"Temperatures in {cityName} from {startDate:dd-MM-yyyy} " +
-                $"to {endDate:dd-MM-yyyy} (°C):" +
-                $"{Environment.NewLine}");
-
-            foreach (var item in temperatures.OrderBy(t => t.Key))
-            {
-                string text = item.Value is double temperature
-                    ? $"{temperature:F2} °C"
-                    : "No data";
-
-                rtbResult.AppendText(
-                    $"{FormatDate(item.Key)}: {text}{Environment.NewLine}");
-            }
         }
 
         private void InitializeCities()
@@ -180,33 +179,6 @@ namespace Ukraine_Climate_Explorer
             cmbCompareCity.SelectedIndex = 0;
         }
 
-        private void InitializeChart()
-        {
-            chartTemperature.Dock = DockStyle.Fill;
-            pnlChart.Controls.Add(chartTemperature);
-            chartTemperature.ZoomMode = ZoomAndPanMode.X;
-
-            cmbChartMode.Items.AddRange(["Daily", "Monthly"]);
-            cmbChartMode.SelectedIndex = 0;
-
-            chartTemperature.XAxes =
-            [
-                new DateTimeAxis(TimeSpan.FromDays(1),
-                    date => date.ToString("dd.MM.yyyy"))
-                {
-                    Name = "Date"
-                }
-            ];
-
-            chartTemperature.YAxes =
-            [
-                new Axis
-                {
-                    Name = "Temperature, °C"
-                }
-            ];
-        }
-
         private void InitializeInputFields()
         {
             dtpStartDate.Value = DateTime.Today.AddDays(-30);
@@ -225,74 +197,6 @@ namespace Ukraine_Climate_Explorer
             return parsedDate.ToString("dd-MM-yyyy");
         }
 
-        private static List<DateTimePoint?> CreateTemperaturePoints(Dictionary<string, double?> temperatures)
-        {
-            List<DateTimePoint?> points = [];
-
-            foreach (var item in temperatures.OrderBy(t => t.Key))
-            {
-                if (item.Value is not double temperature)
-                {
-                    points.Add(null);
-                    continue;
-                }
-
-                DateTime parsedDate = DateTime.ParseExact(
-                    item.Key, "yyyyMMdd", CultureInfo.InvariantCulture);
-
-                points.Add(new DateTimePoint(parsedDate, temperature));
-            }
-            return points;
-        }
-
-        private LineSeries<DateTimePoint?> CreateTemperatureSeries(
-            Dictionary<string, double?> temperatures, string cityName)
-        {
-            List<DateTimePoint?> points = cmbChartMode.SelectedIndex == 1
-                ? CreateMonthlyTemperaturePoints(temperatures)
-                : CreateTemperaturePoints(temperatures);
-
-            return new LineSeries<DateTimePoint?>
-            {
-                YToolTipLabelFormatter = point => $"{point.Coordinate.PrimaryValue:F2} °C",
-                GeometrySize = points.Count <= 60 ? 6 : 1,
-                Name = cmbChartMode.SelectedIndex == 1
-                    ? $"{cityName} — monthly average"
-                    : $"{cityName} — daily temperature",
-                EnableNullSplitting = true,
-                LineSmoothness = 0,
-                Values = points,
-                Fill = null
-            };
-        }
-
-        private static List<DateTimePoint?> CreateMonthlyTemperaturePoints(
-            Dictionary<string, double?> temperatures)
-        {
-            List<DateTimePoint?> points = [];
-
-            Dictionary<DateTime, double?> monthlyAverage =
-                ClimateAnalyzer.CalculateMonthlyAverages(temperatures);
-
-            foreach (var item in monthlyAverage.OrderBy(t => t.Key))
-            {
-                points.Add(item.Value is double temperature
-                    ? new DateTimePoint(item.Key, temperature)
-                    : null);
-            }
-
-            return points;
-        }
-
-        private void ResetChartZoom()
-        {
-            foreach (var axis in chartTemperature.XAxes)
-            {
-                axis.MinLimit = null;
-                axis.MaxLimit = null;
-            }
-        }
-
         private void ResetInputFields()
         {
             loadedPrimary = null;
@@ -303,23 +207,9 @@ namespace Ukraine_Climate_Explorer
             ResetChartZoom();
         }
 
-        private void btnResetZoom_Click(object sender, EventArgs e)
-        {
-            ResetChartZoom();
-        }
-
         private void btnResetAll_Click(object sender, EventArgs e)
         {
             ResetInputFields();
-        }
-
-        private void cmbChartMode_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (loadedPrimary is null)
-                return;
-
-            DisplayChart();
-            ResetChartZoom();
         }
     }
 }
