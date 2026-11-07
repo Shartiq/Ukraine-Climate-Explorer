@@ -13,7 +13,7 @@ namespace Ukraine_Climate_Explorer
     {
         private readonly NasaApiService nasaService = new();
         private readonly CartesianChart chartTemperature = new();
-        private Dictionary<string, double>? loadedTemperatures;
+        private Dictionary<string, double?>? loadedTemperatures;
 
         public Form1()
         {
@@ -69,19 +69,22 @@ namespace Ukraine_Climate_Explorer
             }
         }
 
-        private void DisplayChart(Dictionary<string, double> temperatures)
+        private void DisplayChart(Dictionary<string, double?> temperatures)
         {
-            List<DateTimePoint> points = cmbChartMode.SelectedIndex == 1
+            List<DateTimePoint?> points = cmbChartMode.SelectedIndex == 1
                 ? CreateMonthlyTemperaturePoints(temperatures)
                 : CreateTemperaturePoints(temperatures);
 
             chartTemperature.Series =
             [
-                new LineSeries<DateTimePoint>
+                new LineSeries<DateTimePoint?>
                 {
                     YToolTipLabelFormatter = point => $"{point.Coordinate.PrimaryValue:F2} °C",
                     GeometrySize = points.Count <= 60 ? 6 : 1,
-                    Name = "Temperature",
+                    Name = cmbChartMode.SelectedIndex == 1
+                        ? "Monthly average"
+                        : "Daily temperature",
+                    EnableNullSplitting = true,
                     LineSmoothness = 0,
                     Values = points,
                     Fill = null
@@ -90,7 +93,7 @@ namespace Ukraine_Climate_Explorer
         }
 
         private void DisplayResults(
-            Dictionary<string, double> temperatures,
+            Dictionary<string, double?> temperatures,
             ClimateStatistics stats,
             string cityName,
             DateTime startDate,
@@ -121,11 +124,14 @@ namespace Ukraine_Climate_Explorer
                 $"to {endDate:dd-MM-yyyy} (°C):" +
                 $"{Environment.NewLine}");
 
-            foreach (var item in temperatures.Where(t => t.Value != -999))
+            foreach (var item in temperatures.OrderBy(t => t.Key))
             {
+                string text = item.Value is double temperature
+                    ? $"{temperature:F2} °C"
+                    : "No data";
+
                 rtbResult.AppendText(
-                    $"{FormatDate(item.Key)}: {item.Value} " +
-                    $"°C{Environment.NewLine}");
+                    $"{FormatDate(item.Key)}: {text}{Environment.NewLine}");
             }
         }
 
@@ -207,31 +213,39 @@ namespace Ukraine_Climate_Explorer
             return parsedDate.ToString("dd-MM-yyyy");
         }
 
-        private static List<DateTimePoint> CreateTemperaturePoints(Dictionary<string, double> temperatures)
+        private static List<DateTimePoint?> CreateTemperaturePoints(Dictionary<string, double?> temperatures)
         {
-            List<DateTimePoint> points = [];
+            List<DateTimePoint?> points = [];
 
-            foreach (var item in temperatures.Where(t => t.Value != -999).OrderBy(t => t.Key))
+            foreach (var item in temperatures.OrderBy(t => t.Key))
             {
+                if (item.Value is not double temperature)
+                {
+                    points.Add(null);
+                    continue;
+                }
+
                 DateTime parsedDate = DateTime.ParseExact(
-                    item.Key, "yyyyMMdd", CultureInfo.InvariantCulture
-                );
-                points.Add(new DateTimePoint(parsedDate, item.Value));
+                    item.Key, "yyyyMMdd", CultureInfo.InvariantCulture);
+
+                points.Add(new DateTimePoint(parsedDate, temperature));
             }
             return points;
         }
 
-        private static List<DateTimePoint> CreateMonthlyTemperaturePoints(
-            Dictionary<string, double> temperatures)
+        private static List<DateTimePoint?> CreateMonthlyTemperaturePoints(
+            Dictionary<string, double?> temperatures)
         {
-            List<DateTimePoint> points = [];
+            List<DateTimePoint?> points = [];
 
-            Dictionary<DateTime, double> monthlyAverage =
+            Dictionary<DateTime, double?> monthlyAverage =
                 ClimateAnalyzer.CalculateMonthlyAverages(temperatures);
 
             foreach (var item in monthlyAverage.OrderBy(t => t.Key))
             {
-                points.Add(new DateTimePoint(item.Key, item.Value));
+                points.Add(item.Value is double temperature
+                    ? new DateTimePoint(item.Key, temperature)
+                    : null);
             }
 
             return points;
@@ -248,11 +262,11 @@ namespace Ukraine_Climate_Explorer
 
         private void ResetInputFields()
         {
+            loadedTemperatures = null;
             InitializeInputFields();
             rtbResult.Clear();
             chartTemperature.Series = [];
             ResetChartZoom();
-            loadedTemperatures = null;
         }
 
         private void btnResetZoom_Click(object sender, EventArgs e)

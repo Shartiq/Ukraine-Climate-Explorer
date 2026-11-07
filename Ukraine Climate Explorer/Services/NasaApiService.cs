@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
+﻿using System.Globalization;
 using System.Text.Json;
 using Ukraine_Climate_Explorer.Models;
 
@@ -15,7 +12,7 @@ namespace Ukraine_Climate_Explorer.Services
             PropertyNameCaseInsensitive = true
         };
 
-        public async Task<Dictionary<string, double>> GetTemperaturesAsync(
+        public async Task<Dictionary<string, double?>> GetTemperaturesAsync(
             City city, DateTime startDate, DateTime endDate)
         {
             string latitude = city.Latitude.ToString(CultureInfo.InvariantCulture);
@@ -43,7 +40,11 @@ namespace Ukraine_Climate_Explorer.Services
                     JsonSerializer.Deserialize<NasaPowerResponse>(data, jsonOptions) ??
                         throw new InvalidOperationException("Failed to deserialize NASA Power API response.");
 
-            return nasaData.Properties.Parameter.T2M;
+
+            return nasaData.Properties.Parameter.T2M
+                .ToDictionary(
+                    item => item.Key,
+                    item => item.Value == -999 ? (double?)null : item.Value);
         }
     }
 }
