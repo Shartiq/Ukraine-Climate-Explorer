@@ -34,6 +34,8 @@
             label1 = new Label();
             label2 = new Label();
             grpDataInputs = new GroupBox();
+            label5 = new Label();
+            cmbCompareCity = new ComboBox();
             btnResetAll = new Button();
             label3 = new Label();
             cmbCity = new ComboBox();
@@ -50,9 +52,9 @@
             // btnLoadData
             // 
             btnLoadData.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            btnLoadData.Location = new Point(0, 80);
+            btnLoadData.Location = new Point(220, 80);
             btnLoadData.Name = "btnLoadData";
-            btnLoadData.Size = new Size(644, 53);
+            btnLoadData.Size = new Size(424, 53);
             btnLoadData.TabIndex = 0;
             btnLoadData.Text = "Load Data";
             btnLoadData.UseVisualStyleBackColor = true;
@@ -100,6 +102,8 @@
             // 
             // grpDataInputs
             // 
+            grpDataInputs.Controls.Add(label5);
+            grpDataInputs.Controls.Add(cmbCompareCity);
             grpDataInputs.Controls.Add(btnResetAll);
             grpDataInputs.Controls.Add(label3);
             grpDataInputs.Controls.Add(cmbCity);
@@ -115,6 +119,26 @@
             grpDataInputs.TabIndex = 6;
             grpDataInputs.TabStop = false;
             grpDataInputs.Text = "Data Inputs";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            label5.Location = new Point(6, 62);
+            label5.Name = "label5";
+            label5.Size = new Size(85, 15);
+            label5.TabIndex = 11;
+            label5.Text = "Compare To";
+            // 
+            // cmbCompareCity
+            // 
+            cmbCompareCity.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbCompareCity.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            cmbCompareCity.FormattingEnabled = true;
+            cmbCompareCity.Location = new Point(6, 80);
+            cmbCompareCity.Name = "cmbCompareCity";
+            cmbCompareCity.Size = new Size(209, 24);
+            cmbCompareCity.TabIndex = 10;
             // 
             // btnResetAll
             // 
@@ -241,5 +265,7 @@
         private Button btnResetAll;
         private Label label4;
         private ComboBox cmbChartMode;
+        private Label label5;
+        private ComboBox cmbCompareCity;
     }
 }
