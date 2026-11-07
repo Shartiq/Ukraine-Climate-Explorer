@@ -1,8 +1,8 @@
+using LiveChartsCore.SkiaSharpView.WinForms;
 using System.Globalization;
 using Ukraine_Climate_Explorer.Analysis;
 using Ukraine_Climate_Explorer.Models;
 using Ukraine_Climate_Explorer.Services;
-using LiveChartsCore.SkiaSharpView.WinForms;
 
 namespace Ukraine_Climate_Explorer
 {
@@ -108,6 +108,18 @@ namespace Ukraine_Climate_Explorer
                 else
                     rtbResult.AppendText($"{comparisonCityName}: No data{Environment.NewLine}");
             }
+
+            int totalDays = (endDate.Date - startDate.Date).Days + 1;
+
+            dccPrimary.SetCoverage(cityName, stats.DaysWithData, totalDays);
+            dccPrimary.Visible = true;
+
+            dccComparison.Visible = comparisonCityName is not null;
+            if (comparisonCityName is not null)
+            {
+                dccComparison.SetCoverage(
+                    comparisonCityName, comparisonStats?.DaysWithData ?? 0, totalDays);
+            }
         }
 
         private void AppendStatistics(string cityName, ClimateStatistics stats)
@@ -186,6 +198,8 @@ namespace Ukraine_Climate_Explorer
             cmbCity.SelectedIndex = 0;
             cmbChartMode.SelectedIndex = 0;
             cmbCompareCity.SelectedIndex = 0;
+            dccPrimary.Visible = false;
+            dccComparison.Visible = false;
         }
 
         private static string FormatDate(string date)

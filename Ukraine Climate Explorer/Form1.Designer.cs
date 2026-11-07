@@ -45,8 +45,12 @@
             label4 = new Label();
             cmbChartMode = new ComboBox();
             btnResetZoom = new Button();
+            tlpDataCoverage = new TableLayoutPanel();
+            dccPrimary = new Ukraine_Climate_Explorer.Controls.DataCoverageControl();
+            dccComparison = new Ukraine_Climate_Explorer.Controls.DataCoverageControl();
             grpDataInputs.SuspendLayout();
             grpDayChart.SuspendLayout();
+            tlpDataCoverage.SuspendLayout();
             SuspendLayout();
             // 
             // btnLoadData
@@ -67,8 +71,8 @@
             rtbResult.Location = new Point(12, 12);
             rtbResult.Name = "rtbResult";
             rtbResult.ReadOnly = true;
-            rtbResult.ScrollBars = RichTextBoxScrollBars.ForcedVertical;
-            rtbResult.Size = new Size(390, 504);
+            rtbResult.ScrollBars = RichTextBoxScrollBars.None;
+            rtbResult.Size = new Size(390, 244);
             rtbResult.TabIndex = 1;
             rtbResult.Text = "";
             // 
@@ -231,11 +235,43 @@
             btnResetZoom.UseVisualStyleBackColor = true;
             btnResetZoom.Click += btnResetZoom_Click;
             // 
+            // tlpDataCoverage
+            // 
+            tlpDataCoverage.ColumnCount = 1;
+            tlpDataCoverage.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tlpDataCoverage.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tlpDataCoverage.Controls.Add(dccPrimary, 0, 0);
+            tlpDataCoverage.Controls.Add(dccComparison, 0, 1);
+            tlpDataCoverage.Location = new Point(12, 262);
+            tlpDataCoverage.Name = "tlpDataCoverage";
+            tlpDataCoverage.RowCount = 2;
+            tlpDataCoverage.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tlpDataCoverage.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tlpDataCoverage.Size = new Size(390, 248);
+            tlpDataCoverage.TabIndex = 9;
+            // 
+            // dccPrimary
+            // 
+            dccPrimary.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            dccPrimary.Location = new Point(3, 3);
+            dccPrimary.Name = "dccPrimary";
+            dccPrimary.Size = new Size(384, 118);
+            dccPrimary.TabIndex = 0;
+            // 
+            // dccComparison
+            // 
+            dccComparison.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            dccComparison.Location = new Point(3, 127);
+            dccComparison.Name = "dccComparison";
+            dccComparison.Size = new Size(384, 118);
+            dccComparison.TabIndex = 1;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1202, 527);
+            Controls.Add(tlpDataCoverage);
             Controls.Add(grpDayChart);
             Controls.Add(grpDataInputs);
             Controls.Add(rtbResult);
@@ -245,6 +281,7 @@
             grpDataInputs.PerformLayout();
             grpDayChart.ResumeLayout(false);
             grpDayChart.PerformLayout();
+            tlpDataCoverage.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -267,5 +304,8 @@
         private ComboBox cmbChartMode;
         private Label label5;
         private ComboBox cmbCompareCity;
+        private TableLayoutPanel tlpDataCoverage;
+        private Controls.DataCoverageControl dccPrimary;
+        private Controls.DataCoverageControl dccComparison;
     }
 }

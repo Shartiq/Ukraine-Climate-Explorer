@@ -32,7 +32,9 @@ namespace Ukraine_Climate_Explorer.Analysis
                 MaximumTemperature = ValueMax,
                 MaximumTemperatureDate = KeyMax,
 
-                BelowFreezingDays = belowFreezing
+                BelowFreezingDays = belowFreezing,
+
+                DaysWithData = validTemperatures.Count,
             };
         }
 

@@ -15,5 +15,7 @@ namespace Ukraine_Climate_Explorer.Models
         public string MaximumTemperatureDate { get; set; } = "";
 
         public int BelowFreezingDays { get; set; }
+
+        public int DaysWithData { get; set; }
     }
 }
